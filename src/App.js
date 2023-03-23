@@ -1,43 +1,91 @@
 import React, { useState } from 'react';
 import './index.scss';
 
-const Modal = ({open , setOpen , children}) => (
-    <div className={`overlay animated ${open ? 'show' : ''}`}>
-      <div className="modal">
-        <svg onClick={() => setOpen(false)} height="200" viewBox="0 0 200 200" width="200">
-          <title />
-            <path d="M114,100l49-49a9.9,9.9,0,0,0-14-14L100,86,51,37A9.9,9.9,0,0,0,37,51l49,49L37,149a9.9,9.9,0,0,0,14,14l49-49,49,49a9.9,9.9,0,0,0,14-14Z" />
-          </svg>
-            {children}
-      </div>
-    </div> 
-  )
+const questions = [
+  {
+    title: 'React - это ... ?',
+    variants: ['библиотека', 'фреймворк', 'приложение'],
+    correct: 0,
+  },
+  {
+    title: 'Компонент - это ... ',
+    variants: ['приложение', 'часть приложения или страницы', 'то, что я не знаю что такое'],
+    correct: 1,
+  },
+  {
+    title: 'Что такое JSX?',
+    variants: [
+      'Это простой HTML',
+      'Это функция',
+      'Это тот же HTML, но с возможностью выполнять JS-код',
+    ],
+    correct: 2,
+  },
+];
 
-function App() {
-  const [open, setOpen] = useState(false)
-
+function Result({correct}) {
   return (
-    <div className="App">
-      <button onClick={() => setOpen(true)} className="open-modal-btn">
-        Open modal window
-      </button>
-        <Modal open={open} setOpen={setOpen}>
-          <img src="https://hips.hearstapps.com/pop.h-cdn.co/assets/17/24/640x320/landscape-1497533116-not-dead.gif?resize=640:*" />
-          <h3>Let's Dance</h3>
-        </Modal>
-        {/* {open && (
-        <div className="overlay">
-          <div className="modal">
-            <svg onClick={() => setOpen(false)} height="200" viewBox="0 0 200 200" width="200">
-              <title />
-              <path d="M114,100l49-49a9.9,9.9,0,0,0-14-14L100,86,51,37A9.9,9.9,0,0,0,37,51l49,49L37,149a9.9,9.9,0,0,0,14,14l49-49,49,49a9.9,9.9,0,0,0,14-14Z" />
-            </svg>
-            <img src="https://hips.hearstapps.com/pop.h-cdn.co/assets/17/24/640x320/landscape-1497533116-not-dead.gif?resize=640:*" />
-          </div>
-        </div> 
-      )} */}
+    <div className="result">
+      <img src="https://cdn-icons-png.flaticon.com/512/2278/2278992.png" />
+      <h2>Вы отгадали {correct} ответа из {questions.length}</h2>
+      <a href='/'>
+        <button>Попробовать снова</button>
+      </a>
     </div>
   );
 }
+
+function Game({step, question , onClickVariant}) {
+  const percentage = Math.round((step / questions.length * 100)) 
+
+  console.log(step);
+  return (
+    <>
+      <div className="progress">
+        <div style={{ width: `${percentage}%` }} className="progress__inner"></div>
+      </div>
+      <h1>{question.title}</h1>
+      <ul>
+        {
+          question.variants.map((text, index) => (
+            <li onClick={() => onClickVariant(index)} key={text} >
+              {text}
+            </li>
+          ))}
+      </ul>
+    </>
+  );
+}
+
+function App() {
+  const [step, setStep] = useState(0);
+  const [correct, setCorrect] = useState(0)
+  
+  const question = questions[step];
+  console.log(question);
+
+  const onClickVariant = (index) => {
+    console.log(step, index);
+    setStep(step + 1)
+
+    if (index == question.correct){
+      setCorrect(correct + 1)
+    }
+  }
+
+  return (
+    <div className="App">
+      {
+        step !== questions.length ? (
+        <Game step={step} question={question} onClickVariant={onClickVariant} />
+       ) : (
+       <Result correct={correct} />
+      )}
+      {/* <Game step={step} question={question} onClickVariant={onClickVariant}/> */}
+      {/* <Result /> */}
+    </div>
+  );
+}
+
 
 export default App;
